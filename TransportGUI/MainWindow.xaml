@@ -6,7 +6,173 @@
         xmlns:local="clr-namespace:TransportGUI"
         mc:Ignorable="d"
         Title="ÖV-InfoTool" Height="450" Width="800">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="TransportGUIStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
-        
+        <TabControl Margin="0">
+            <TabItem Width="120" Height="48">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal" Style="{DynamicResource StackPanelStyleTabIndex}">
+                        <TextBlock Text="Verbindungen"/>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <!-- CONTENT TAB Verbindungen -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="24px"></RowDefinition>
+                        <RowDefinition Height="48px"></RowDefinition>
+                        <RowDefinition Height="24px"></RowDefinition>
+                        <RowDefinition Height="48px"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0">Von</Label>
+                    <Label Grid.Row="0" Grid.Column="1">Nach</Label>
+                    <TextBox x:Name="txtFrom" Grid.Row="1" Grid.Column="0" Margin="10"></TextBox>
+                    <TextBox x:Name="txtTo" Grid.Row="1" Grid.Column="1" Margin="10"></TextBox>
+                    <Grid Grid.Row="2" Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"></ColumnDefinition>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0">Datum</Label>
+                        <Label Grid.Column="1">Zeit</Label>
+                    </Grid>
+                    <Grid Grid.Row="3" Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"></ColumnDefinition>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <DatePicker Name="DepartureDate" Grid.Column="0" SelectedDateFormat="Long"
+                                    DisplayDateStart="1/01/20" DisplayDateEnd="12/31/29"
+                                    FirstDayOfWeek="Monday" Margin="10"/>
+                        <TextBox Name="DepartureTime" Grid.Column="1" Margin="10"></TextBox>
+                    </Grid>
+                    <Button Grid.Row="3" Grid.Column="2" Margin="10" Background="#FFEB0000" Foreground="White" Click="getConnections">Verbindung Suchen</Button>
+                    <!--<ListView Name="ConnectionTable" HorizontalAlignment="Left" Height="199" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="766" Grid.ColumnSpan="2">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding TrainType}"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding FromStation}"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding ToStation}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>-->
+                    <DataGrid Grid.Row="4" Grid.ColumnSpan="2" Name="ConnectionTable" AutoGenerateColumns="False" IsReadOnly="True" >
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="240">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock TextBlock.TextAlignment="Left" Text="{Binding From.Station.Name}" Grid.Row="0"></TextBlock>
+                                            <TextBlock TextBlock.TextAlignment="Left" Text="{Binding To.Station.Name}" Grid.Row="0"></TextBlock>
+                                            <TextBlock Grid.Row="1">ab</TextBlock>
+                                            <TextBlock Text="{Binding From.Station.Departure}"  Grid.Row="1"></TextBlock>
+                                            <TextBlock Grid.Row="1">an</TextBlock>
+                                            <TextBlock Text="{Binding To.Station.Arrival}"  Grid.Row="1"></TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Binding="{Binding Duration}"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding From.Platform}"></DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            
+            <TabItem Width="120" Height="48">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal" Style="{DynamicResource StackPanelStyleTabIndex}">
+                        <TextBlock Text="Abfahrtstafel"/>
+                    </StackPanel>
+                </TabItem.Header>
+                
+                <!-- CONTENT TAB Abfahrtstafel -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="24px"></RowDefinition>
+                        <RowDefinition Height="48px"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0">Station</Label>
+                    <TextBox x:Name="txtStation" Grid.Row="1" Grid.Column="0" Margin="10"></TextBox>
+                    <Button x:Name="btnStationBoard" Grid.Row="1" Grid.Column="1" Margin="10" Background="#FFEB0000" Foreground="White" Click="getTimeTable">Abfahrten anzeigen</Button>
+
+                    <!--<ListView Name="ConnectionTable" HorizontalAlignment="Left" Height="199" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="766" Grid.ColumnSpan="2">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding TrainType}"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding FromStation}"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding ToStation}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>-->
+                    <DataGrid Grid.Row="2" Grid.ColumnSpan="2" Name="StationBoardTable" AutoGenerateColumns="False" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding Name}"></DataGridTextColumn>
+                            <!--<DataGridTextColumn Binding="{Binding Category}"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Number}"></DataGridTextColumn>-->
+                            <DataGridTextColumn Binding="{Binding To}"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Stop.Departure}"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Stop.Platform}"></DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Width="120" Height="48">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal" Style="{DynamicResource StackPanelStyleTabIndex}">
+                        <TextBlock Text="Stations Info"/>
+                    </StackPanel>
+                </TabItem.Header>
+                
+                <!-- CONTENT TAB StationsInfo -->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="24px"></RowDefinition>
+                            <RowDefinition Height="48px"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0" Grid.Column="0">Station</Label>
+                        <TextBox x:Name="txtStationInfo" Grid.Row="1" Grid.Column="0" Margin="10"></TextBox>
+                        <Button x:Name="btnStationInfo" Grid.Row="1" Grid.Column="1" Margin="10" Background="#FFEB0000" Foreground="White" Click="getStations">Stationen suchen</Button>
+
+                        <!--<ListView Name="ConnectionTable" HorizontalAlignment="Left" Height="199" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="766" Grid.ColumnSpan="2">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding TrainType}"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding FromStation}"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding ToStation}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>-->
+                    <DataGrid Grid.Row="2" Grid.ColumnSpan="2" Name="StationInfoTable" AutoGenerateColumns="False" IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Name}"></DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
