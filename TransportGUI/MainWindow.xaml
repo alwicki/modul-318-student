@@ -3,9 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:behaviors="clr-namespace:WPFTextBoxAutoComplete;assembly=WPFTextBoxAutoComplete"
         xmlns:local="clr-namespace:TransportGUI"
         mc:Ignorable="d"
         Title="ÖV-InfoTool" Height="450" Width="800">
+
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -37,8 +39,12 @@
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="0">Von</Label>
                     <Label Grid.Row="0" Grid.Column="1">Nach</Label>
-                    <TextBox x:Name="txtFrom" Grid.Row="1" Grid.Column="0" Margin="10"></TextBox>
-                    <TextBox x:Name="txtTo" Grid.Row="1" Grid.Column="1" Margin="10"></TextBox>
+                    <!--<TextBox x:Name="txtFrom" Grid.Row="1" Grid.Column="0" Margin="10" PreviewTextInput="getStationListSelect"
+                             behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding TestItems}"></TextBox>-->
+
+                    <ComboBox IsEditable="True" x:Name="txtFrom" Grid.Row="1" Grid.Column="0" Margin="10" TextBoxBase.TextChanged="getStationListSelect" LostFocus="cmbAutofillStation_LostFocus"/>
+
+                    <ComboBox IsEditable="True" x:Name="txtTo" Grid.Row="1" Grid.Column="1" Margin="10" TextBoxBase.TextChanged="getStationListSelect" LostFocus="cmbAutofillStation_LostFocus"/>
                     <Grid Grid.Row="2" Grid.Column="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -55,9 +61,9 @@
                         <DatePicker Name="DepartureDate" Grid.Column="0" SelectedDateFormat="Long"
                                     DisplayDateStart="1/01/20" DisplayDateEnd="12/31/29"
                                     FirstDayOfWeek="Monday" Margin="10"/>
-                        <TextBox Name="DepartureTime" Grid.Column="1" Margin="10"></TextBox>
+                        <TextBox x:Name="txtDepartureTime" Grid.Column="1" Margin="10" MaxLength="4" PreviewTextInput="NumberValidationTextBox" LostFocus="txtDepartureTime_LostFocus" GotKeyboardFocus="selectTime" MouseDoubleClick="selectTime"/>
                     </Grid>
-                    <Button Grid.Row="3" Grid.Column="2" Margin="10" Background="#FFEB0000" Foreground="White" Click="getConnections">Verbindung Suchen</Button>
+                    <Button x:Name="btnConSearch" Grid.Row="3" Grid.Column="2" Margin="10" Background="#FFEB0000" Foreground="White" Click="btnConSearch_Clicked">Verbindung Suchen</Button>
                     <!--<ListView Name="ConnectionTable" HorizontalAlignment="Left" Height="199" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="766" Grid.ColumnSpan="2">
                         <ListView.View>
                             <GridView>
@@ -69,21 +75,24 @@
                     </ListView>-->
                     <DataGrid Grid.Row="4" Grid.ColumnSpan="2" Name="ConnectionTable" AutoGenerateColumns="False" IsReadOnly="True" >
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Width="240">
+                            <!--<DataGridTemplateColumn Width="240">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel>
                                             <TextBlock TextBlock.TextAlignment="Left" Text="{Binding From.Station.Name}" Grid.Row="0"></TextBlock>
                                             <TextBlock TextBlock.TextAlignment="Left" Text="{Binding To.Station.Name}" Grid.Row="0"></TextBlock>
                                             <TextBlock Grid.Row="1">ab</TextBlock>
-                                            <TextBlock Text="{Binding From.Station.Departure}"  Grid.Row="1"></TextBlock>
+                                            <TextBlock Text="{Binding From.Station.Departure, StringFormat={}{0:HH:mm}}"  Grid.Row="1"></TextBlock>
                                             <TextBlock Grid.Row="1">an</TextBlock>
-                                            <TextBlock Text="{Binding To.Station.Arrival}"  Grid.Row="1"></TextBlock>
+                                            <TextBlock Text="{Binding To.Station.Arrival, StringFormat={}{0:HH:mm}}"  Grid.Row="1"></TextBlock>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Binding="{Binding Duration}"></DataGridTextColumn>
+                            </DataGridTemplateColumn>-->
+                            <DataGridTextColumn Binding="{Binding From.Station.Name}"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding To.Station.Name}"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding From.Station.Departure}" ></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Duration, StringFormat={}{0:HH:mm}}"></DataGridTextColumn>
                             <DataGridTextColumn Binding="{Binding From.Platform}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
@@ -99,6 +108,7 @@
                 </TabItem.Header>
                 
                 <!-- CONTENT TAB Abfahrtstafel -->
+
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="24px"></RowDefinition>
@@ -110,7 +120,7 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="0">Station</Label>
-                    <TextBox x:Name="txtStation" Grid.Row="1" Grid.Column="0" Margin="10"></TextBox>
+                    <ComboBox x:Name="txtStation" Grid.Row="1" Grid.Column="0" Margin="10" IsEditable="True" TextBoxBase.TextChanged="getStationListSelect" LostFocus="cmbAutofillStation_LostFocus"></ComboBox>
                     <Button x:Name="btnStationBoard" Grid.Row="1" Grid.Column="1" Margin="10" Background="#FFEB0000" Foreground="White" Click="getTimeTable">Abfahrten anzeigen</Button>
 
                     <!--<ListView Name="ConnectionTable" HorizontalAlignment="Left" Height="199" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="766" Grid.ColumnSpan="2">
@@ -128,10 +138,11 @@
                             <!--<DataGridTextColumn Binding="{Binding Category}"></DataGridTextColumn>
                             <DataGridTextColumn Binding="{Binding Number}"></DataGridTextColumn>-->
                             <DataGridTextColumn Binding="{Binding To}"></DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding Stop.Departure}"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Stop.Departure, StringFormat={}{0:HH:mm}}"></DataGridTextColumn>
                             <DataGridTextColumn Binding="{Binding Stop.Platform}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+                    <!--, StringFormat=Time: {HH:mm}-->
                 </Grid>
             </TabItem>
 
@@ -154,8 +165,8 @@
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Label Grid.Row="0" Grid.Column="0">Station</Label>
-                        <TextBox x:Name="txtStationInfo" Grid.Row="1" Grid.Column="0" Margin="10"></TextBox>
-                        <Button x:Name="btnStationInfo" Grid.Row="1" Grid.Column="1" Margin="10" Background="#FFEB0000" Foreground="White" Click="getStations">Stationen suchen</Button>
+                        <TextBox x:Name="txtStationInfo" Grid.Row="1" Grid.Column="0" Margin="10"/>
+                    <Button x:Name="btnStationInfo" Grid.Row="1" Grid.Column="1" Margin="10" Background="#FFEB0000" Foreground="White" Click="btnStationInfo_Clicked">Stationen suchen</Button>
 
                         <!--<ListView Name="ConnectionTable" HorizontalAlignment="Left" Height="199" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="766" Grid.ColumnSpan="2">
                         <ListView.View>
@@ -167,9 +178,10 @@
                         </ListView.View>
                     </ListView>-->
                     <DataGrid Grid.Row="2" Grid.ColumnSpan="2" Name="StationInfoTable" AutoGenerateColumns="False" IsReadOnly="True">
-                            <DataGrid.Columns>
+                        <DataGrid.Columns>
                                 <DataGridTextColumn Binding="{Binding Name}"></DataGridTextColumn>
-                            </DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Name}"></DataGridTextColumn>
+                        </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
             </TabItem>
