@@ -12,8 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SwissTransport;
 using System.Text.RegularExpressions;
+using SwissTransport;
+using System.Diagnostics;
 
 namespace TransportGUI
 {
@@ -21,14 +22,6 @@ namespace TransportGUI
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
     /// 
-    public class DateConverter
-    {
-        public object Convert(object value)
-        {
-            DateTime date = (DateTime)value;
-            return date.ToShortDateString();
-        }
-    }
 
     public partial class MainWindow : Window
     {
@@ -46,41 +39,49 @@ namespace TransportGUI
 
         private void btnConSearch_Clicked(object sender, RoutedEventArgs e)
         {
+            searchConnections();
+        }
+
+        private void searchConnections()
+        {
+            transport = new Transport();
             string from = txtFrom.Text.ToString();
             string to = txtTo.Text.ToString();
             DateTime selectedDate = (DateTime)DepartureDate.SelectedDate;
             string date = selectedDate.ToString("yyyy-MM-dd");
             string time = txtDepartureTime.Text.ToString();
-
-            searchConnections(from, to, date, time);
+            try
+            {
+                var connections = transport.GetConnectionsByDateTime(from, to, date, time);
+                foreach (Connection c in connections.ConnectionList)
+                {
+                    DateTime departureTime = DateTime.Parse(c.From.Departure);
+                    c.From.Departure = departureTime.ToString("HH:mm");
+                }
+                ConnectionTable.ItemsSource = connections.ConnectionList;
+            }
+            catch
+            {
+                MessageBox.Show("Keine Verbindung zum Internet.", "Fehler");
+            }
         }
-
-        private void searchConnections(string from, string to, string date, string time)
-        {
-            //MessageBox.Show(from + to + date + time);
-            transport = new Transport();
-            var connections = transport.GetConnectionsByDateTime(from, to, date, time);
-            ConnectionTable.ItemsSource = connections.ConnectionList;
-        }
-
-        private void getTimeTable(object sender, RoutedEventArgs e)
-        {
-            transport = new Transport();
-            string searchTerm = txtStation.Text.ToString();
-            var stationBoard = transport.GetStationBoard(searchTerm);
-            StationBoardTable.ItemsSource = stationBoard.Entries;
-        }
-
 
         private void btnStationInfo_Clicked(object sender, RoutedEventArgs e)
         {
             if (validateTextField())
             {
                 string searchTerm = txtStationInfo.Text.ToString();
-                Stations stations = getStations(searchTerm);
-                if (stations.StationList.Count > 0)
+                try
                 {
-                    StationInfoTable.ItemsSource = stations.StationList;
+                    Stations stations = getStations(searchTerm);
+                    if (stations.StationList.Count > 0)
+                    {
+                        StationInfoTable.ItemsSource = stations.StationList;
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Keine Verbindung zum Internet.", "Fehler");
                 }
             }
         }
@@ -107,11 +108,11 @@ namespace TransportGUI
         {
             if (time.Length == 1)
             {
-                    time = "0" + time + ":00";
+                time = "0" + time + ":00";
             }
             else if (time.Length == 2)
             {
-                time = time+":00";
+                time = time + ":00";
             }
             else if (time.Length == 3)
             {
@@ -126,7 +127,7 @@ namespace TransportGUI
             if (!regex.IsMatch(time))
             {
                 txtDepartureTime.Text = DateTime.Now.ToString("HH:mm");
-            } 
+            }
             else
             {
                 txtDepartureTime.Text = time;
@@ -147,7 +148,6 @@ namespace TransportGUI
 
         private void selectTime(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("FOCUSED");
             TextBox tb = (sender as TextBox);
             tb.SelectAll();
         }
@@ -160,24 +160,30 @@ namespace TransportGUI
             if (cbText.Length > 2 && cb.Items.Count == 0)
             {
                 cb.Items.Clear();
-                stations = getStations(cbText);
-                if (stations.StationList.Count > 0)
+                try
                 {
-                    Console.WriteLine(stations.StationList.Count);
-                    foreach (Station s in stations.StationList)
+                    stations = getStations(cbText);
+                    if (stations.StationList.Count > 0)
                     {
-                        cb.Items.Add(s.Name);
-                    }
-                    cb.IsDropDownOpen = true;        
-                    var tb = (cb.Template.FindName("PART_EditableTextBox", cb) as TextBox);
-                    if (tb != null)
-                    {
-                        tb.Focus();
-                        tb.SelectionStart = tb.Text.Length;
+                        foreach (Station s in stations.StationList)
+                        {
+                            cb.Items.Add(s.Name);
+                        }
+                        cb.IsDropDownOpen = true;
+                        var tb = (cb.Template.FindName("PART_EditableTextBox", cb) as TextBox);
+                        if (tb != null)
+                        {
+                            tb.Focus();
+                            tb.SelectionStart = tb.Text.Length;
+                        }
                     }
                 }
+                catch
+                {
+                    MessageBox.Show("Keine Verbindung zum Internet.", "Fehler");
+                }
             }
-            else if(cbText.Length < 3)
+            else if (cbText.Length < 3)
             {
                 cb.Items.Clear();
                 cb.IsDropDownOpen = false;
@@ -187,9 +193,147 @@ namespace TransportGUI
         private void cmbAutofillStation_LostFocus(object sender, RoutedEventArgs e)
         {
             ComboBox cb = (sender as ComboBox);
-            if (!cb.Items.Contains(cb.Text) && cb.Items.Count>0)
+            if (!cb.Items.Contains(cb.Text) && cb.Items.Count > 0)
             {
                 cb.Text = cb.Items.GetItemAt(0).ToString();
+            }
+        }
+
+        private void btnOpenMap_Click(object sender, RoutedEventArgs e)
+        {
+            var tag = ((Button)sender).Tag;
+            Station station = (Station)tag;
+            MapWindow map = new MapWindow(station.Coordinate.XCoordinate, station.Coordinate.YCoordinate);
+            map.ShowDialog();
+        }
+        private void btnOpenMapNear_Click(object sender, RoutedEventArgs e)
+        {
+            MapWindow map = new MapWindow();
+            map.ShowDialog();
+        }
+
+        private void infoTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ConnectionTab.IsSelected)
+            {
+                ComboBox cb = (txtFrom as ComboBox);
+                var tb = (cb.Template.FindName("PART_EditableTextBox", cb) as TextBox);
+                if (tb != null)
+                {
+                    tb.Focus();
+                }
+            }
+        }
+
+        private void infoTab_Loaded(object sender, RoutedEventArgs e)
+        {
+            ComboBox cb = (txtFrom as ComboBox);
+            var tb = (cb.Template.FindName("PART_EditableTextBox", cb) as TextBox);
+            if (tb != null)
+            {
+                tb.Focus();
+            }
+        }
+
+        private void btnMail_Clicked(object sender, RoutedEventArgs e)
+        {
+            if (ConnectionTab.IsSelected)
+            {
+                if (ConnectionTable.Items.Count == 0)
+                {
+                    MessageBox.Show("Keine Ergebnise zu versenden", "Fehler");
+                }
+                else
+                {
+                    string body = "Von" + "%09%09" + "Nach" + "%09" + "Ab" + "%09" + "Dauer" + "%09%09" + "Gleis" + "%0A";
+                    foreach (Connection cn in ConnectionTable.Items)
+                    {
+                        body += cn.From.Station.Name + "%09" + cn.To.Station.Name + "%09" + cn.From.Departure + "%09" + cn.Duration + "%09" + cn.From.Platform + "%0A";
+                    }
+                    string subject = "Verbindungen von " + txtFrom.Text + " nach" + txtTo.Text;
+                    Process.Start("mailto:?subject=" + subject + "&body=" + body);
+                }
+            }
+            if (StationBoardTab.IsSelected)
+            {
+                if (StationBoardTable.Items.Count == 0)
+                {
+                    MessageBox.Show("Keine Ergebnise zu versenden", "Fehler");
+                }
+                else
+                {
+                    string body = "Fahrt" + "%09" + "Nach" + "%09" + "Ab" + "%09" + "Gleis" + "%0A";
+                    foreach (StationBoard sb in StationBoardTable.Items)
+                    {
+                        body += sb.Name + "%09" + sb.To + "%09" + sb.Stop.Departure + "%09" + sb.Stop.Platform + "%0A";
+                    }
+                    string subject = "Abfahrtstafel " + txtStation.Text;
+                    Process.Start("mailto:?subject=" + subject + "&body=" + body);
+                }
+            }
+            if (StationInfoTab.IsSelected)
+            {
+                if (StationInfoTable.Items.Count == 0)
+                {
+                    MessageBox.Show("Keine Ergebnise zu versenden", "Fehler");
+                }
+                else
+                {
+                    string body = "Name" + "%09" + "X-Koordinate" + "%09" + "Y-Koordinate" + "%0A";
+                    foreach (Station st in StationInfoTable.Items)
+                    {
+                        body += st.Name + "%09" + st.Coordinate.XCoordinate + "%09" + st.Coordinate.YCoordinate + "%0A";
+                    }
+                    string subject = "Stationen ";
+                    Process.Start("mailto:?subject=" + subject + "&body=" + body);
+                }
+            }
+        }
+
+        private void doAction_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+
+                if (ConnectionTab.IsSelected)
+                {
+                    if(txtFrom.SelectedIndex > -1 && txtTo.SelectedIndex > -1)
+                    {
+                        searchConnections();
+                    }
+                }
+                if (StationBoardTab.IsSelected)
+                {
+                    if (txtStation.SelectedIndex > -1)
+                        getTimeTable(txtStation.Text);
+                }
+                if (StationInfoTab.IsSelected)
+                {
+                    if(txtStationInfo.Text.Length>0)
+                    {
+                        getStations(txtStationInfo.Text);
+                    }
+                }
+            }
+        }
+
+        private void btnStationBoard_Clicked(object sender, RoutedEventArgs e)
+        {
+            string searchTerm = txtStation.Text.ToString();
+            getTimeTable(searchTerm);
+        }
+
+        private void getTimeTable(string searchTerm)
+        {
+            transport = new Transport();
+            try
+            {
+                var stationBoard = transport.GetStationBoard(searchTerm);
+                StationBoardTable.ItemsSource = stationBoard.Entries;
+            }
+            catch
+            {
+                MessageBox.Show("Keine Verbindung zum Internet.", "Fehler");
             }
         }
     }

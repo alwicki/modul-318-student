@@ -6,7 +6,7 @@
         xmlns:behaviors="clr-namespace:WPFTextBoxAutoComplete;assembly=WPFTextBoxAutoComplete"
         xmlns:local="clr-namespace:TransportGUI"
         mc:Ignorable="d"
-        Title="ÖV-InfoTool" Height="450" Width="800">
+        Title="ÖV-InfoTool" Height="450" Width="800" KeyDown="doAction_KeyDown">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -16,8 +16,8 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <TabControl Margin="0">
-            <TabItem Width="120" Height="48">
+        <TabControl x:Name="infoTab" SelectionChanged="infoTab_SelectionChanged" Margin="0" Loaded="infoTab_Loaded">
+            <TabItem x:Name="ConnectionTab" Width="120" Height="48">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal" Style="{DynamicResource StackPanelStyleTabIndex}">
                         <TextBlock Text="Verbindungen"/>
@@ -89,24 +89,24 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>-->
-                            <DataGridTextColumn Binding="{Binding From.Station.Name}"></DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding To.Station.Name}"></DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding From.Station.Departure}" ></DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding Duration, StringFormat={}{0:HH:mm}}"></DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding From.Platform}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Von" Binding="{Binding From.Station.Name}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Nach" Binding="{Binding To.Station.Name}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Ab" Binding="{Binding From.Departure}" ></DataGridTextColumn>
+                            <DataGridTextColumn Header="Dauer" Binding="{Binding Duration, StringFormat={}{0:HH:mm}}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Gleis" Binding="{Binding From.Platform}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </TabItem>
 
-            
-            <TabItem Width="120" Height="48">
+
+            <TabItem x:Name="StationBoardTab" Width="120" Height="48">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal" Style="{DynamicResource StackPanelStyleTabIndex}">
                         <TextBlock Text="Abfahrtstafel"/>
                     </StackPanel>
                 </TabItem.Header>
-                
+
                 <!-- CONTENT TAB Abfahrtstafel -->
 
                 <Grid>
@@ -121,7 +121,7 @@
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="0">Station</Label>
                     <ComboBox x:Name="txtStation" Grid.Row="1" Grid.Column="0" Margin="10" IsEditable="True" TextBoxBase.TextChanged="getStationListSelect" LostFocus="cmbAutofillStation_LostFocus"></ComboBox>
-                    <Button x:Name="btnStationBoard" Grid.Row="1" Grid.Column="1" Margin="10" Background="#FFEB0000" Foreground="White" Click="getTimeTable">Abfahrten anzeigen</Button>
+                    <Button x:Name="btnStationBoard" Grid.Row="1" Grid.Column="1" Margin="10" Background="#FFEB0000" Foreground="White" Click="btnStationBoard_Clicked">Abfahrten anzeigen</Button>
 
                     <!--<ListView Name="ConnectionTable" HorizontalAlignment="Left" Height="199" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="766" Grid.ColumnSpan="2">
                         <ListView.View>
@@ -133,42 +133,44 @@
                         </ListView.View>
                     </ListView>-->
                     <DataGrid Grid.Row="2" Grid.ColumnSpan="2" Name="StationBoardTable" AutoGenerateColumns="False" IsReadOnly="True">
+
                         <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Name}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Art" Binding="{Binding Category}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Fahrt" Binding="{Binding Name}"></DataGridTextColumn>
                             <!--<DataGridTextColumn Binding="{Binding Category}"></DataGridTextColumn>
                             <DataGridTextColumn Binding="{Binding Number}"></DataGridTextColumn>-->
-                            <DataGridTextColumn Binding="{Binding To}"></DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding Stop.Departure, StringFormat={}{0:HH:mm}}"></DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding Stop.Platform}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Nach" Binding="{Binding To}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Ab" Binding="{Binding Stop.Departure, StringFormat={}{0:HH:mm}}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Gleis" Binding="{Binding Stop.Platform}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                     <!--, StringFormat=Time: {HH:mm}-->
                 </Grid>
             </TabItem>
 
-            <TabItem Width="120" Height="48">
+            <TabItem x:Name="StationInfoTab" Width="120" Height="48">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal" Style="{DynamicResource StackPanelStyleTabIndex}">
                         <TextBlock Text="Stations Info"/>
                     </StackPanel>
                 </TabItem.Header>
-                
-                <!-- CONTENT TAB StationsInfo -->
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="24px"></RowDefinition>
-                            <RowDefinition Height="48px"></RowDefinition>
-                            <RowDefinition Height="*"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Row="0" Grid.Column="0">Station</Label>
-                        <TextBox x:Name="txtStationInfo" Grid.Row="1" Grid.Column="0" Margin="10"/>
-                    <Button x:Name="btnStationInfo" Grid.Row="1" Grid.Column="1" Margin="10" Background="#FFEB0000" Foreground="White" Click="btnStationInfo_Clicked">Stationen suchen</Button>
 
-                        <!--<ListView Name="ConnectionTable" HorizontalAlignment="Left" Height="199" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="766" Grid.ColumnSpan="2">
+                <!-- CONTENT TAB StationsInfo -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="48px"></RowDefinition>
+                        <RowDefinition Height="48px"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Padding="5 24 0 0" Grid.Column="0" VerticalAlignment="Bottom">Station</Label>
+                    <TextBox x:Name="txtStationInfo" TabIndex="0" Grid.Row="1" Grid.Column="0" Margin="10"/>
+                    <Button x:Name="btnStationInfo" Grid.Row="1" Grid.Column="1" Margin="10" Background="#FFEB0000" Foreground="White" Click="btnStationInfo_Clicked">Stationen suchen</Button>
+                    <Button x:Name="btnOpenMapNear" Grid.Row="0" Grid.Column="1" Margin="10" Background="#FFEB0000" Foreground="White" Click="btnOpenMapNear_Click">Haltestellen in der Nähe</Button>
+                    <!--<ListView Name="ConnectionTable" HorizontalAlignment="Left" Height="199" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="766" Grid.ColumnSpan="2">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding TrainType}"/>
@@ -177,14 +179,22 @@
                             </GridView>
                         </ListView.View>
                     </ListView>-->
-                    <DataGrid Grid.Row="2" Grid.ColumnSpan="2" Name="StationInfoTable" AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid Grid.Row="2" Grid.ColumnSpan="2" Name="StationInfoTable" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="None" Margin="10 0 0 0">
                         <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding Name}"></DataGridTextColumn>
-                                <DataGridTextColumn Binding="{Binding Name}"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Name}"></DataGridTextColumn>
+                            <DataGridTextColumn Binding="{Binding Distance}"></DataGridTextColumn>
+                            <DataGridTemplateColumn>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button x:Name="btnOpenMap" Tag="{Binding}" Click="btnOpenMap_Click">auf Karte Anzeigen</Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
-                        </DataGrid>
-                    </Grid>
+                    </DataGrid>
+                </Grid>
             </TabItem>
         </TabControl>
+        <Button x:Name="btnMail" Height="48" Width="48" VerticalAlignment="Top" HorizontalAlignment="Right" Click="btnMail_Clicked">Mail</Button>
     </Grid>
 </Window>
