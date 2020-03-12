@@ -25,10 +25,10 @@ namespace TransportGUI
 
     public partial class MainWindow : Window
     {
-
-
+        // Variable to initialize Transport Class
         private ITransport transport;
 
+        // Constructor of MainWindow, gets the actual date and time for default values of connection search.
         public MainWindow()
         {
             InitializeComponent();
@@ -37,11 +37,13 @@ namespace TransportGUI
             txtDepartureTime.Text = datetime.ToString("HH:mm");
         }
 
+        // If btnConSearch gets clicked it will search for connections
         private void btnConSearch_Clicked(object sender, RoutedEventArgs e)
         {
             searchConnections();
         }
 
+        // Calls with an instance of transport class the api for connections and displays them.
         private void searchConnections()
         {
             transport = new Transport();
@@ -69,6 +71,7 @@ namespace TransportGUI
             }      
         }
 
+        // if btnStationInfo gets clicked it will search for stations with function getStations() and displays them
         private void btnStationInfo_Clicked(object sender, RoutedEventArgs e)
         {
             if (validateTextField())
@@ -89,6 +92,32 @@ namespace TransportGUI
             }
         }
 
+        // If bstStationBoard is clicked and txtStation is not empty call getTimeTable().
+        private void btnStationBoard_Clicked(object sender, RoutedEventArgs e)
+        {
+            string searchTerm = txtStation.Text.ToString();
+            if (searchTerm.Length > 0)
+            {
+                getTimeTable(searchTerm);
+            }
+        }
+
+        // Gets the Data for StationBoardTable from api.
+        private void getTimeTable(string searchTerm)
+        {
+            transport = new Transport();
+            try
+            {
+                var stationBoard = transport.GetStationBoard(searchTerm);
+                StationBoardTable.ItemsSource = stationBoard.Entries;
+            }
+            catch
+            {
+                MessageBox.Show("Keine Verbindung zum Internet.", "Fehler");
+            }
+        }
+
+        // Gets the stations from api.
         private Stations getStations(string searchTerm)
         {
             transport = new Transport();
@@ -98,6 +127,7 @@ namespace TransportGUI
             }
         }
 
+        // validates the textfield, should not be empty
         private bool validateTextField()
         {
             if (txtStationInfo.Text.Length > 0)
@@ -107,6 +137,7 @@ namespace TransportGUI
             return false;
         }
 
+        // Converts a string to a valid time in format HH:mm.
         private void validateTimeField(string time)
         {
             if (time.Length == 1)
@@ -137,24 +168,28 @@ namespace TransportGUI
             }
         }
 
+        // Checks if input is a number.
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
         }
 
+        // If txtDepartureTime loses focus it will check the text.
         private void txtDepartureTime_LostFocus(object sender, RoutedEventArgs e)
         {
             string time = txtDepartureTime.Text.ToString();
             validateTimeField(time);
         }
 
+        // Selects text in textfield.
         private void selectTime(object sender, RoutedEventArgs e)
         {
             TextBox tb = (sender as TextBox);
             tb.SelectAll();
         }
 
+        // Gets stations for the ComboBox if more then three chars are typed.
         private void getStationListSelect(object sender, TextChangedEventArgs e)
         {
             Stations stations;
@@ -193,6 +228,7 @@ namespace TransportGUI
             }
         }
 
+        // If ComboBox loses focus it will take the first item if items exist.
         private void cmbAutofillStation_LostFocus(object sender, RoutedEventArgs e)
         {
             ComboBox cb = (sender as ComboBox);
@@ -202,6 +238,7 @@ namespace TransportGUI
             }
         }
 
+        // If btnOpenMap gets clicked open new window with map.
         private void btnOpenMap_Click(object sender, RoutedEventArgs e)
         {
             var tag = ((Button)sender).Tag;
@@ -209,12 +246,15 @@ namespace TransportGUI
             MapWindow map = new MapWindow(station.Coordinate.XCoordinate, station.Coordinate.YCoordinate);
             map.ShowDialog();
         }
+
+        // If btnOpenMapNear gets clicked open new window with map.
         private void btnOpenMapNear_Click(object sender, RoutedEventArgs e)
         {
             MapWindow map = new MapWindow();
             map.ShowDialog();
         }
 
+        // Set focus in info tab when selection changed.
         private void infoTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ConnectionTab.IsSelected)
@@ -228,6 +268,7 @@ namespace TransportGUI
             }
         }
 
+        // Set focus in info tab when loaded.
         private void infoTab_Loaded(object sender, RoutedEventArgs e)
         {
             ComboBox cb = (txtFrom as ComboBox);
@@ -238,6 +279,7 @@ namespace TransportGUI
             }
         }
 
+        // Sets body and subject for mail and opens default mail app.
         private void btnMail_Clicked(object sender, RoutedEventArgs e)
         {
             if (ConnectionTab.IsSelected)
@@ -293,6 +335,7 @@ namespace TransportGUI
             }
         }
 
+        // If enter is pressed call search function of tab.
         private void doAction_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -317,29 +360,6 @@ namespace TransportGUI
                         getStations(txtStationInfo.Text);
                     }
                 }
-            }
-        }
-
-        private void btnStationBoard_Clicked(object sender, RoutedEventArgs e)
-        {
-            string searchTerm = txtStation.Text.ToString();
-            if (searchTerm.Length > 0)
-            {
-                getTimeTable(searchTerm);
-            }
-        }
-
-        private void getTimeTable(string searchTerm)
-        {
-            transport = new Transport();
-            try
-            {
-                var stationBoard = transport.GetStationBoard(searchTerm);
-                StationBoardTable.ItemsSource = stationBoard.Entries;
-            }
-            catch
-            {
-                MessageBox.Show("Keine Verbindung zum Internet.", "Fehler");
             }
         }
     }

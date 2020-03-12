@@ -124,5 +124,11 @@
       <Name>SwissTransportTest</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Res\email-24px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Res\info-24px.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

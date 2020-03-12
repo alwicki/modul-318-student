@@ -1,4 +1,5 @@
 ﻿<Window x:Class="TransportGUI.MainWindow"
+        Icon="Res/info-24px.png"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,7 +7,7 @@
         xmlns:behaviors="clr-namespace:WPFTextBoxAutoComplete;assembly=WPFTextBoxAutoComplete"
         xmlns:local="clr-namespace:TransportGUI"
         mc:Ignorable="d"
-        Title="ÖV-InfoTool" Height="450" Width="800" KeyDown="doAction_KeyDown" WindowStartupLocation="CenterScreen">
+        Title="ÖV-InfoTool" Height="660" Width="800" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -15,7 +16,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid>
+    <Grid KeyDown="doAction_KeyDown">
         <TabControl x:Name="infoTab" SelectionChanged="infoTab_SelectionChanged" Margin="0" Loaded="infoTab_Loaded">
             <TabItem x:Name="ConnectionTab" Width="120" Height="48">
                 <TabItem.Header>
@@ -170,15 +171,6 @@
                     <TextBox x:Name="txtStationInfo" TabIndex="0" Grid.Row="1" Grid.Column="0" Margin="10"/>
                     <Button x:Name="btnStationInfo" Grid.Row="1" Grid.Column="1" Margin="10" Background="#FFEB0000" Foreground="White" Click="btnStationInfo_Clicked">Stationen suchen</Button>
                     <Button x:Name="btnOpenMapNear" Grid.Row="0" Grid.Column="1" Margin="10" Background="#FFEB0000" Foreground="White" Click="btnOpenMapNear_Click">Haltestellen in der Nähe</Button>
-                    <!--<ListView Name="ConnectionTable" HorizontalAlignment="Left" Height="199" Margin="10,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="766" Grid.ColumnSpan="2">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn DisplayMemberBinding="{Binding TrainType}"/>
-                                <GridViewColumn DisplayMemberBinding="{Binding FromStation}"/>
-                                <GridViewColumn DisplayMemberBinding="{Binding ToStation}"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>-->
                     <DataGrid Grid.Row="2" Grid.ColumnSpan="2" Name="StationInfoTable" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="None" Margin="10 0 0 0">
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding Name}"></DataGridTextColumn>
@@ -186,7 +178,7 @@
                             <DataGridTemplateColumn>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button x:Name="btnOpenMap" Tag="{Binding}" Click="btnOpenMap_Click">auf Karte Anzeigen</Button>
+                                        <Button x:Name="btnOpenMap" Margin="10" Height="24" Background="#FFEB0000" Foreground="White" Tag="{Binding}" Click="btnOpenMap_Click">Auf Karte anzeigen</Button>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -195,9 +187,9 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button x:Name="btnMail" Background="white" Height="48" Width="48" VerticalAlignment="Top" HorizontalAlignment="Right" Click="btnMail_Clicked">
+        <Button x:Name="btnMail" BorderThickness="0" Background="white" Height="48" Width="48" VerticalAlignment="Top" HorizontalAlignment="Right" Click="btnMail_Clicked">
             <StackPanel>
-                <Image Source="Res/email.png"/>
+                <Image Source="Res/email-24px.png"/>
             </StackPanel>
         </Button>
     </Grid>

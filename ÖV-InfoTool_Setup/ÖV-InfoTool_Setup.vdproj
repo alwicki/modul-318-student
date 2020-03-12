@@ -63,6 +63,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_B36F0B7312B840BE82A0874307B77507"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D757E3231B214529A8A9DA723548AC8F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -376,6 +382,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B36F0B7312B840BE82A0874307B77507"
+            {
+            "SourcePath" = "8:..\\..\\..\\..\\Downloads\\126bd66a12e33dcf92f4333a8d2a1a1d.ico\\favicon.ico"
+            "TargetName" = "8:favicon.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_31E61875719F4A1B94075CB7E7A6F301"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F24E8BC2E23CE2B0842B271945A112CF"
             {
             "AssemblyRegister" = "3:1"
@@ -464,7 +490,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ÖV-InfoTool_Setup"
         "ProductCode" = "8:{2984211A-4506-413B-8AC8-D1500FE1A100}"
-        "PackageCode" = "8:{730739F4-2574-4E4E-A15F-557FCF074AFF}"
+        "PackageCode" = "8:{68D32522-4201-4AA0-B6DD-BDAF2962CECB}"
         "UpgradeCode" = "8:{185912F2-2AC2-46FD-886B-DCA6A28629E8}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -477,9 +503,9 @@
         "ARPHELPLINK" = "8:"
         "Title" = "8:ÖV-InfoTool_Setup"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:Default Company Name"
+        "ARPCONTACT" = "8:Aurel Wicki"
         "Keywords" = "8:"
-        "ARPCOMMENTS" = "8:"
+        "ARPCOMMENTS" = "8:Tool to get information about public transport"
         "ARPURLINFOABOUT" = "8:"
         "ARPPRODUCTICON" = "8:"
         "ARPIconIndex" = "3:0"
@@ -595,7 +621,7 @@
             "Target" = "8:_D757E3231B214529A8A9DA723548AC8F"
             "Folder" = "8:_2EAEED3E66E04FB1B48E4B5CE323EDB8"
             "WorkingFolder" = "8:_31E61875719F4A1B94075CB7E7A6F301"
-            "Icon" = "8:"
+            "Icon" = "8:_B36F0B7312B840BE82A0874307B77507"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8D4F66E275B744C19E14672A7C6F9B17"
@@ -609,7 +635,7 @@
             "Target" = "8:_D757E3231B214529A8A9DA723548AC8F"
             "Folder" = "8:_3AF8327F89DE41CA8637DC20656A784F"
             "WorkingFolder" = "8:_31E61875719F4A1B94075CB7E7A6F301"
-            "Icon" = "8:"
+            "Icon" = "8:_B36F0B7312B840BE82A0874307B77507"
             "Feature" = "8:"
             }
         }

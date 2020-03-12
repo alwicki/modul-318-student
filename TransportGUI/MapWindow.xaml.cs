@@ -23,6 +23,8 @@ namespace TransportGUI
     public partial class MapWindow : Window
     {
         private ITransport transport;
+
+        // Constructor for MapWindow if User wants to see his position
         public MapWindow()
         {
             InitializeComponent();
@@ -65,38 +67,17 @@ namespace TransportGUI
             {
                 MessageBox.Show("Keine Verbindung zum Internet.", "Fehler");
             }
-
         }
 
+        // Constructor for MapWindow if User wants to see the position of a station
         public MapWindow(double xCoord, double yCoord)
         {
             InitializeComponent();
-            GeoCoordinateWatcher watcher = new GeoCoordinateWatcher();
-
-            // Do not suppress prompt, and wait 1000 milliseconds to start.
-            watcher.TryStart(false, TimeSpan.FromMilliseconds(1000));
-
-            GeoCoordinate coord = watcher.Position.Location;
-
-            if (coord.IsUnknown != true)
-            {
-                Console.WriteLine("Lat: {0}, Long: {1}",
-                    coord.Latitude,
-                    coord.Longitude);
-            }
-            else
-            {
-                Console.WriteLine("Unknown latitude and longitude.");
-                coord.Latitude = 47.050174;
-                coord.Longitude = 8.310247;
-            }
             Location initLocation = new Location(xCoord, yCoord);
             myMap.SetView(initLocation, 15);
             Pushpin pushpin = new Pushpin();
             pushpin.Location = initLocation;
             myMap.Children.Add(pushpin);
         }
-
-
     }
 }
