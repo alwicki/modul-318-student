@@ -50,20 +50,23 @@ namespace TransportGUI
             DateTime selectedDate = (DateTime)DepartureDate.SelectedDate;
             string date = selectedDate.ToString("yyyy-MM-dd");
             string time = txtDepartureTime.Text.ToString();
-            try
+            if(txtFrom.Text.Length > 0 && txtTo.Text.Length > 0)
             {
-                var connections = transport.GetConnectionsByDateTime(from, to, date, time);
-                foreach (Connection c in connections.ConnectionList)
+                try
                 {
-                    DateTime departureTime = DateTime.Parse(c.From.Departure);
-                    c.From.Departure = departureTime.ToString("HH:mm");
+                    var connections = transport.GetConnectionsByDateTime(from, to, date, time);
+                    foreach (Connection c in connections.ConnectionList)
+                    {
+                        DateTime departureTime = DateTime.Parse(c.From.Departure);
+                        c.From.Departure = departureTime.ToString("HH:mm");
+                    }
+                    ConnectionTable.ItemsSource = connections.ConnectionList;
                 }
-                ConnectionTable.ItemsSource = connections.ConnectionList;
-            }
-            catch
-            {
-                MessageBox.Show("Keine Verbindung zum Internet.", "Fehler");
-            }
+                catch
+                {
+                    MessageBox.Show("Keine Verbindung zum Internet.", "Fehler");
+                }
+            }      
         }
 
         private void btnStationInfo_Clicked(object sender, RoutedEventArgs e)
@@ -297,14 +300,14 @@ namespace TransportGUI
 
                 if (ConnectionTab.IsSelected)
                 {
-                    if(txtFrom.SelectedIndex > -1 && txtTo.SelectedIndex > -1)
+                    if(txtFrom.Text.Length > 0 && txtTo.Text.Length > 0)
                     {
                         searchConnections();
                     }
                 }
                 if (StationBoardTab.IsSelected)
                 {
-                    if (txtStation.SelectedIndex > -1)
+                    if (txtStation.Text.Length>0)
                         getTimeTable(txtStation.Text);
                 }
                 if (StationInfoTab.IsSelected)
@@ -320,7 +323,10 @@ namespace TransportGUI
         private void btnStationBoard_Clicked(object sender, RoutedEventArgs e)
         {
             string searchTerm = txtStation.Text.ToString();
-            getTimeTable(searchTerm);
+            if (searchTerm.Length > 0)
+            {
+                getTimeTable(searchTerm);
+            }
         }
 
         private void getTimeTable(string searchTerm)

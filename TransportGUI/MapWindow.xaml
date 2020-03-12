@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TransportGUI"
 		xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
         mc:Ignorable="d"
-        Title="MapWindow" Height="450" Width="800">
+        Title="MapWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen">
     <Grid Name="MapView">
         <m:Map x:Name="myMap" CredentialsProvider="OoH7dL8bLxq80w9kzqVK~Lic1Pbgml1PLyLDLD-HWPw~Am9Sa1Y6I2QJSRlRPgUSLUHGmuVrA91tTR-b2ND2oZ9VBKfuNEI7KSw8Ozh1R6fK" Mode="Road" ZoomLevel="10" Center="47.050174, 8.310185">
         </m:Map>

@@ -6,7 +6,7 @@
         xmlns:behaviors="clr-namespace:WPFTextBoxAutoComplete;assembly=WPFTextBoxAutoComplete"
         xmlns:local="clr-namespace:TransportGUI"
         mc:Ignorable="d"
-        Title="ÖV-InfoTool" Height="450" Width="800" KeyDown="doAction_KeyDown">
+        Title="ÖV-InfoTool" Height="450" Width="800" KeyDown="doAction_KeyDown" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -195,6 +195,10 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button x:Name="btnMail" Height="48" Width="48" VerticalAlignment="Top" HorizontalAlignment="Right" Click="btnMail_Clicked">Mail</Button>
+        <Button x:Name="btnMail" Background="white" Height="48" Width="48" VerticalAlignment="Top" HorizontalAlignment="Right" Click="btnMail_Clicked">
+            <StackPanel>
+                <Image Source="Res/email.png"/>
+            </StackPanel>
+        </Button>
     </Grid>
 </Window>
